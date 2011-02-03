@@ -1,3 +1,9 @@
+				ANFS Branch
+
+This is a branch of Linux 2.6.37 which contains modifications to the kernel
+which enable ANFS. ANFS is a modification to NFSv4 to implement additional
+features including redundancy, encryption, and compression.
+
 	Linux kernel release 2.6.xx <http://kernel.org/>
 
 These are the release notes for Linux version 2.6.  Read them carefully,
