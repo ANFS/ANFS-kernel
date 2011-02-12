@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Make sure we are in the right base dir
+if [ -d ./ANFS ]; then
+	BASE_DIR="$PWD"
+else
+	BASE_DIR="${PWD}/.."
+fi
+
+# Ensure we use the right config file
+MACH=$(uname -m)
+
+if [ "$MACH" = "x86_64" ]; then
+	CONFIG="kconfig-64"
+elif [ "$MACH" = "i686" ]; then
+	CONFIG="kconfig-32"
+else
+	echo "Unsupported arch $MACH!!!"
+	exit 1
+fi
+
+cp $BASE_DIR/ANFS/$CONFIG $BASE_DIR/.config
+
+cd $BASE_DIR
+
+# Compile using 3 threads
+export CONCURRENCY_LEVEL=3
+
+# Cleanup
+fakeroot make-kpkg clean
+# Compile it
+fakeroot make-kpkg --initrd --append-to-version="-anfs1" --us --uc kernel-image kernel_debug kernel-headers
+
+cd -
+
