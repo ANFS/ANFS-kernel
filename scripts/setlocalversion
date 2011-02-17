@@ -170,4 +170,6 @@ else
 	fi
 fi
 
-echo "$res"
+# Don't echo out anything, it fucks up Debian package creation
+#echo "$res"
+
