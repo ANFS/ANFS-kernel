@@ -1,5 +1,18 @@
 #!/bin/bash
 
+CLEAN="false"
+RM_CONFIG="true"
+
+if [ $# -eq 0 ]; then
+	CLEAN="false"
+elif [ $# -eq 1 ] && [ "$1" == "clean" ]; then
+	CLEAN="true"
+else
+	echo "ERROR: Unknown argument $1"
+	echo "Usage: $0 [clean]"
+	exit 1
+fi
+
 # Make sure we are in the right base dir
 if [ -d ./ANFS ]; then
 	BASE_DIR="$PWD"
@@ -19,7 +32,28 @@ else
 	exit 1
 fi
 
-cp $BASE_DIR/ANFS/$CONFIG $BASE_DIR/.config || exit 1
+if [ -f $BASE_DIR/.config ]; then
+	STAND=$(sha256sum $BASE_DIR/ANFS/$CONFIG | cut -d ' ' -f1)
+	NEW=$(sha256sum $BASE_DIR/.config | cut -d ' ' -f1)
+
+	if [ ! "$STAND" = "$NEW" ]; then
+		echo "Different config file detected!"
+		echo "Use the new one or the one configured by Lee (y/N)"
+		read yn
+
+		if [ "$yn" = "y" ] || [ "$yn" = "yes" ]; then
+			echo "Remember to check in your change!"
+			sleep 3
+
+			cp $BASE_DIR/.config $BASE_DIR/ANFS/$CONFIG
+			RM_CONFIG="false"
+		else
+			cp $BASE_DIR/ANFS/$CONFIG $BASE_DIR/.config || exit 1
+		fi
+	fi
+else
+	cp $BASE_DIR/ANFS/$CONFIG $BASE_DIR/.config || exit 1
+fi
 
 # Get the first 7 bytes of the git hash for tracking info
 GVER=$(git rev-parse HEAD | head -c 7)
@@ -29,10 +63,19 @@ cd $BASE_DIR
 # Compile using 3 threads
 export CONCURRENCY_LEVEL=3
 
-# Cleanup
-fakeroot make-kpkg clean || exit 1
+if [ "$CLEAN" = "true" ]; then
+	# Cleanup
+	fakeroot make-kpkg clean || exit 1
+fi
+
 # Compile it
 fakeroot make-kpkg --append_to_version "-anfs" --revision "g${GVER}" --initrd kernel_image kernel_debug kernel_headers || exit 1
+
+# If we're compiling with the default config remove it at the end incase
+# a new config comes along
+if [ "$RM_CONFIG" = "true" ]; then
+	rm $BASE_DIR/.config
+fi
 
 cd -
 
