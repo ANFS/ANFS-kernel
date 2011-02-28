@@ -84,6 +84,42 @@ config NFS_V4_1
 
 	  If unsure, say N.
 
+config NFS_REDUNDANCY
+	bool "NFS client redundancy support (EXPERIMENTAL)"
+	depends on NFS_V4 && EXPERIMENTAL
+	help
+	  This option enables experimental NFS redundancy support in the client.
+	  NFS redundancy allows a client to connect to more then one NFS server
+	  at the same time and preform read and writes to multiple servers. In
+	  case of a server failure as long as there still is another the client
+	  will not lose its connection.
+
+	  This is not an offical NFS spec but is being done as a senior design
+	  project at Drexel University 
+
+config NFS_COMPRESSION
+	bool "NFS client compression support (EXPERIMENTAL)"
+	depends on NFS_V4 && ZLIB_INFLATE && ZLIB_DEFLATE && EXPERIMENTAL
+	help
+	  This option allows the client to compress all data between it and an
+	  NFS compression enabled server. Data will only be compressed if it is
+	  detected compression will leseen data size by at least 25%. This
+	  option will increase the NFS packet size to 8K
+
+	  This is not an offical NFS standard but is being done as a senior
+	  design project at Drexel University
+
+config NFS_ENCRYPTION
+	bool "NFS client encryption support (EXPERIMENTAL)"
+	depends on NFS_V4 && CRYPTO_AES && EXPERIMENTAL
+	help
+	  This option allows encryption to be added to all data sent to and
+	  from the client. An AES key must be set in userspace which will then
+	  be used to encrypt all data.
+
+	  This is not an offical NFS standard but is being done as a senior
+	  design project at Drexel University
+
 config PNFS_FILE_LAYOUT
 	tristate
 
