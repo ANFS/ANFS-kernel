@@ -91,3 +91,43 @@ config NFSD_V4
 	  available from http://linux-nfs.org/.
 
 	  If unsure, say N.
+
+config NFSD_REDUNDANCY
+	bool "NFS server redundancy support (EXPERIMENTAL)"
+	depends on NFSD_V4
+	help
+	  This option enables experimental NFS redundancy support for the
+	  server. NFS redundancy allows a client to connect to more then one NFS
+	  server at the same time and preform read and writes to multiple
+	  servers. In case of a server failure as long as there still is another
+	  the client will not lose its connection.
+
+	  A server can mirror another without having the data. The first
+	  operation of redundancy is to ensure all data is the same.
+
+	  This is not an offical NFS standard but is being done as a senior
+	  design project at Drexel University
+
+config NFSD_COMPRESSION
+	bool "NFS server compression support (EXPERIMENTAL)"
+	depends on NFSD_V4 && ZLIB_INFLATE && ZLIB_DEFLATE
+	help
+	  This option allows all data between a supported client and server to
+	  be compressed. Data will only be compressed if it is detected
+	  compression will lessen data size by at least 25%. This option will
+	  increase the NFS packet size to 8K
+
+	  This is not an offical NFS standard but is being done as a senior
+	  design project at Drexel University
+
+config NFSD_ENCRYPTION
+	bool "NFS server encryption support (EXPERIMENTAL)"
+	depends on NFSD_V4 && CRYPTO_AES
+	help
+	  This option allows all data between a supported client and server to
+	  be encrypted. An AES key must be set in userspace which will then
+	  be used to encrypt all data.
+
+	  This is not an offical NFS standard but is being done as a senior
+	  design project at Drexel University
+
