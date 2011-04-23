@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
-# Linux/i386 2.6.38.2 Kernel Configuration
-# Mon Apr 11 02:39:24 2011
+# Linux/i386 2.6.38.4 Kernel Configuration
+# Sat Apr 23 05:07:35 2011
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -2825,6 +2825,7 @@ CONFIG_KGDB_LOW_LEVEL_TRAP=y
 CONFIG_KGDB_KDB=y
 CONFIG_KDB_KEYBOARD=y
 CONFIG_HAVE_ARCH_KMEMCHECK=y
+# CONFIG_TEST_KSTRTOX is not set
 CONFIG_STRICT_DEVMEM=y
 # CONFIG_X86_VERBOSE_BOOTUP is not set
 CONFIG_EARLY_PRINTK=y
