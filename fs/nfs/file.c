@@ -28,6 +28,7 @@
 #include <linux/aio.h>
 #include <linux/gfp.h>
 #include <linux/swap.h>
+//#include <linux/zlib.h>
 
 #include <asm/uaccess.h>
 #include <asm/system.h>
@@ -60,7 +61,8 @@ static int nfs_check_flags(int flags);
 static int nfs_lock(struct file *filp, int cmd, struct file_lock *fl);
 static int nfs_flock(struct file *filp, int cmd, struct file_lock *fl);
 static int nfs_setlease(struct file *file, long arg, struct file_lock **fl);
-
+//static int def(struct file *file, int level);
+//static void zerr(int ret);
 static const struct vm_operations_struct nfs_file_vm_ops;
 
 const struct file_operations nfs_file_operations = {
@@ -105,6 +107,8 @@ const struct inode_operations nfs3_file_inode_operations = {
 # define IS_SWAPFILE(inode)	(0)
 #endif
 
+
+/* FIle Fucntions */
 static int nfs_check_flags(int flags)
 {
 	if ((flags & (O_APPEND | O_DIRECT)) == (O_APPEND | O_DIRECT))
@@ -119,7 +123,7 @@ static int nfs_check_flags(int flags)
 static int
 nfs_file_open(struct inode *inode, struct file *filp)
 {
-	int res;
+	int res, ret;
 
 	dprintk("NFS: open file(%s/%s)\n",
 			filp->f_path.dentry->d_parent->d_name.name,
@@ -129,7 +133,7 @@ nfs_file_open(struct inode *inode, struct file *filp)
 	res = nfs_check_flags(filp->f_flags);
 	if (res)
 		return res;
-
+	
 	res = nfs_open(inode, filp);
 	return res;
 }
