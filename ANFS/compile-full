@@ -38,12 +38,12 @@ if [ -f $BASE_DIR/.config ]; then
 
 	if [ ! "$STAND" = "$NEW" ]; then
 		echo "Different config file detected!"
-		echo "Use the new one or the one configured by Lee (y/N)"
+		echo "Would you like to use your custom config? (y/N)"
 		read yn
 
 		if [ "$yn" = "y" ] || [ "$yn" = "yes" ]; then
 			echo "Remember to check in your change!"
-			sleep 3
+			sleep 1
 
 			cp $BASE_DIR/.config $BASE_DIR/ANFS/$CONFIG
 			RM_CONFIG="false"
@@ -61,7 +61,7 @@ GVER=$(git rev-parse HEAD | head -c 7)
 cd $BASE_DIR
 
 # Compile using 3 threads
-export CONCURRENCY_LEVEL=3
+export CONCURRENCY_LEVEL=4
 
 if [ "$CLEAN" = "true" ]; then
 	# Cleanup
