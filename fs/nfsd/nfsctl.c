@@ -13,6 +13,11 @@
 #include <linux/lockd/lockd.h>
 #include <linux/sunrpc/clnt.h>
 
+#ifdef CONFIG_NFSD_REDUNDANCY
+#include <linux/nfs_redundancy.h>
+#include "redundancy.h"
+#endif
+
 #include "idmap.h"
 #include "nfsd.h"
 #include "cache.h"
@@ -1464,9 +1469,18 @@ static int __init init_nfsd(void)
 		goto out_free_idmap;
 	retval = register_filesystem(&nfsd_fs_type);
 	if (retval)
-		goto out_free_all;
+		goto out_free_proc;
+#ifdef CONFIG_NFSD_REDUNDANCY
+	retval = nfsd_redundancy_init();
+	if (retval)
+		goto out_free_redundancy;
+#endif
 	return 0;
-out_free_all:
+#ifdef CONFIG_NFSD_REDUNDANCY
+out_free_redundancy:
+	nfsd_redundancy_shutdown();
+#endif
+out_free_proc:
 	remove_proc_entry("fs/nfs/exports", NULL);
 	remove_proc_entry("fs/nfs", NULL);
 out_free_idmap:
@@ -1484,6 +1498,9 @@ out_free_stat:
 
 static void __exit exit_nfsd(void)
 {
+#ifdef CONFIG_NFSD_REDUNDANCY
+	nfsd_redundancy_shutdown();
+#endif
 	nfsd_export_shutdown();
 	nfsd_reply_cache_shutdown();
 	remove_proc_entry("fs/nfs/exports", NULL);
