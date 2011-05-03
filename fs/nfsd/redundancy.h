@@ -18,5 +18,4 @@ int nfsd_redundancy_init(void);
 
 void nfsd_redundancy_shutdown(void);
 
-
 #endif

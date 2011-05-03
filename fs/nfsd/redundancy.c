@@ -17,6 +17,7 @@
 
 #include <linux/slab.h>
 #include <linux/stddef.h>
+#include <linux/list.h>
 #include <linux/nfs_redundancy.h>
 
 // list of redundant servers we know about
@@ -33,10 +34,15 @@ static struct nfs4_redundancy* malloc_nfs4_redundancy(void)
 	list->srv 	= NULL;
 	list->latency 	= 0;
 	list->verified	= NOT_VERIFIED;
-	list->files	= 0;
-	list->next	= NULL;
+	INIT_LIST_HEAD(&list->list);
 
 	return list;
+}
+
+static void free_nfs4_redundancy(struct nfs4_redundancy* redun)
+{
+	list_del(&redun->list);
+	kfree(redun);
 }
 
 int nfsd_redundancy_init(void)
@@ -54,7 +60,24 @@ int nfsd_redundancy_init(void)
 	return 0;
 }
 
+/*
+ * The redundancy module needs to work in a P2P fashion. As each node
+ * finds out about another redundant node data must 
+ */
+int nfsd_redundancy_srv(int port)
+{
+}
+
 void nfsd_redundancy_shutdown(void)
 {
+	struct list_head* pos;
+	struct nfs4_redundancy* tmp;
+
+	list_for_each(pos, &redun_head->list)
+	{
+		tmp = list_entry(pos, struct nfs4_redundancy, list);
+
+		free_nfs4_redundancy(tmp);
+	}
 }
 
