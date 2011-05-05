@@ -15,7 +15,6 @@
 
 #ifdef CONFIG_NFSD_REDUNDANCY
 #include <linux/nfs_redundancy.h>
-#include "redundancy.h"
 #endif
 
 #include "idmap.h"
@@ -1471,14 +1470,14 @@ static int __init init_nfsd(void)
 	if (retval)
 		goto out_free_proc;
 #ifdef CONFIG_NFSD_REDUNDANCY
-	retval = nfsd_redundancy_init();
+	retval = nfs_redundancy_init();
 	if (retval)
 		goto out_free_redundancy;
 #endif
 	return 0;
 #ifdef CONFIG_NFSD_REDUNDANCY
 out_free_redundancy:
-	nfsd_redundancy_shutdown();
+	nfs_redundancy_shutdown();
 #endif
 out_free_proc:
 	remove_proc_entry("fs/nfs/exports", NULL);
@@ -1499,7 +1498,7 @@ out_free_stat:
 static void __exit exit_nfsd(void)
 {
 #ifdef CONFIG_NFSD_REDUNDANCY
-	nfsd_redundancy_shutdown();
+	nfs_redundancy_shutdown();
 #endif
 	nfsd_export_shutdown();
 	nfsd_reply_cache_shutdown();

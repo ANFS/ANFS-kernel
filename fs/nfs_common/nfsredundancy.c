@@ -15,6 +15,7 @@
  *
  */
 
+#include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/stddef.h>
 #include <linux/list.h>
@@ -45,7 +46,7 @@ static void free_nfs4_redundancy(struct nfs4_redundancy* redun)
 	kfree(redun);
 }
 
-int nfsd_redundancy_init(void)
+int nfs_redundancy_init(void)
 {
 	printk(KERN_INFO "Initilizing experimental NFS redundancy code...\n");
 
@@ -60,15 +61,17 @@ int nfsd_redundancy_init(void)
 	return 0;
 }
 
+EXPORT_SYMBOL_GPL(nfs_redundancy_init);
+
 /*
  * The redundancy module needs to work in a P2P fashion. As each node
  * finds out about another redundant node data must 
  */
-int nfsd_redundancy_srv(int port)
+int nfs_redundancy_srv(int port)
 {
 }
 
-void nfsd_redundancy_shutdown(void)
+void nfs_redundancy_shutdown(void)
 {
 	struct list_head* pos;
 	struct nfs4_redundancy* tmp;
@@ -80,4 +83,8 @@ void nfsd_redundancy_shutdown(void)
 		free_nfs4_redundancy(tmp);
 	}
 }
+EXPORT_SYMBOL_GPL(nfs_redundancy_shutdown);
+
+MODULE_AUTHOR("Lee Trager <lt73@cs.drexel.edu>");
+MODULE_LICENSE("GPL");
 

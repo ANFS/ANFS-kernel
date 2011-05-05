@@ -28,5 +28,9 @@ struct nfs4_redundancy
 	struct list_head list;
 };
 
+extern int nfs_redundancy_init(void);
+
+extern void nfs_redundancy_shutdown(void);
+
 #endif
 
