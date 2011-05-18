@@ -2741,6 +2741,11 @@ nfs4_remote_mount(struct file_system_type *fs_type, int flags,
 
 	security_free_mnt_opts(&data->lsm_opts);
 	nfs_free_fhandle(mntfh);
+
+#ifdef CONFIG_NFS_REDUNDANCY
+	//nfs_redundancy_init(server);
+#endif
+
 	return mntroot;
 
 out:

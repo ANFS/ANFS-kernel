@@ -2603,6 +2603,40 @@ static void nfs4_xdr_enc_layoutget(struct rpc_rqst *req,
 }
 #endif /* CONFIG_NFS_V4_1 */
 
+#ifdef CONFIG_NFS_REDUNDANCY
+
+static void encode_get_list(struct xdr_stream *xdr,
+			    const struct nfs4_get_list_arg *get_list,
+			    struct compound_hdr *hdr)
+{
+	__be32 *p;
+	p = reserve_space(xdr, 4);
+	*p++ = cpu_to_be32(OP_GET_LIST);
+	
+}
+
+static void nfs4_xdr_enc_get_list(struct rpc_rqst *req,
+				  struct xdr_stream *xdr,
+				  struct nfs4_get_list_arg *arg)
+{
+	struct compound_hdr hdr = {
+		.minorversion = nfs4_xdr_minorversion(&arg->seq_args),
+	};
+
+	encode_compound_hdr(xdr, req, &hdr);
+	encode_sequence(xdr, &arg->seq_args, &hdr);
+	
+	encode_nops(&hdr);
+}
+
+static void nfs4_xdr_enc_notify_server_failure(struct rpc_rqst *req,
+				struct xdr_stream *xdr,
+				struct nfs4_notify_server_failure_arg *args)
+{
+}
+
+#endif /* CONFIG_NFS_REDUNDANCY */
+
 static void print_overflow_msg(const char *func, const struct xdr_stream *xdr)
 {
 	dprintk("nfs: %s: prematurely hit end of receive buffer. "
@@ -6266,6 +6300,11 @@ struct rpc_procinfo	nfs4_procedures[] = {
 	PROC(GETDEVICEINFO,	enc_getdeviceinfo,	dec_getdeviceinfo),
 	PROC(LAYOUTGET,		enc_layoutget,		dec_layoutget),
 #endif /* CONFIG_NFS_V4_1 */
+#ifdef CONFIG_NFS_REDUNDANCY
+	//PROC(GET_LIST,		enc_get_list,		dec_get_list),
+	//PROC(NOTIFY_SERVER_FAILURE,	enc_notify_server_failure,	dec_notify_server_failure),
+	//PROC(NOTIFY_NEW_SERVER,	enc_notify_new_server,	dec_notify_new_server),
+#endif
 };
 
 struct rpc_version		nfs_version4 = {

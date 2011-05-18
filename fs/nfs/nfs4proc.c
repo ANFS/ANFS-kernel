@@ -2046,6 +2046,56 @@ nfs4_atomic_open(struct inode *dir, struct nfs_open_context *ctx, int open_flags
 	return igrab(state->inode);
 }
 
+#ifdef CONFIG_NFS_REDUNDANCY
+static int nfs4_get_list(struct nfs_server* srv, struct nfs4_string** list)
+{
+	struct nfs4_get_list_arg args;
+	struct nfs4_get_list_res res = {
+		.list = list,
+	};
+	struct rpc_message msg = {
+		.rpc_proc = &nfs4_procedures[NFSPROC4_CLNT_GET_LIST],
+		.rpc_argp = &args,
+		.rpc_resp = &res,
+	};
+
+	return nfs4_call_sync(srv, &msg, &args, &res, 0);
+}
+
+static int nfs4_notify_server_failure(struct nfs_server* srv,
+				      struct nfs4_string* host)
+{
+	struct nfs4_notify_server_failure_arg args = {
+		.host = host,
+	};
+	struct nfs4_notify_server_failure_res res;
+	struct rpc_message msg = {
+		.rpc_proc = &nfs4_procedures[NFSPROC4_CLNT_NOTIFY_SERVER_FAILURE],
+		.rpc_argp = &args,
+		.rpc_resp = &res,
+	};
+
+	return nfs4_call_sync(srv, &msg, &args, &res, 0);
+}
+
+static int nfs4_notify_new_server(struct nfs_server* srv,
+				  struct nfs4_string* host)
+{
+	struct nfs4_notify_new_server_arg args;
+	struct nfs4_notify_new_server_res res = {
+		.host = host,
+	};
+	struct rpc_message msg = {
+		.rpc_proc = &nfs4_procedures[NFSPROC4_CLNT_NOTIFY_NEW_SERVER],
+		.rpc_argp = &args,
+		.rpc_resp = &res,
+	};
+
+	return nfs4_call_sync(srv, &msg, &args, &res, 0);
+}
+
+#endif /* CONFIG_NFS_REDUNDANCY */
+
 static void nfs4_close_context(struct nfs_open_context *ctx, int is_sync)
 {
 	if (ctx->state == NULL)
@@ -5648,6 +5698,11 @@ const struct nfs_rpc_ops nfs_v4_clientops = {
 	.clear_acl_cache = nfs4_zap_acl_attr,
 	.close_context  = nfs4_close_context,
 	.open_context	= nfs4_atomic_open,
+#ifdef CONFIG_NFS_REDUNDANCY
+	.get_list	= nfs4_get_list,
+	.notify_failure = nfs4_notify_server_failure,
+	.notify_new	= nfs4_notify_new_server,
+#endif
 };
 
 static const struct xattr_handler nfs4_xattr_nfs4_acl_handler = {

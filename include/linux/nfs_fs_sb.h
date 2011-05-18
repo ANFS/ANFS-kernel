@@ -81,6 +81,11 @@ struct nfs_client {
 #ifdef CONFIG_NFS_FSCACHE
 	struct fscache_cookie	*fscache;	/* client index cache cookie */
 #endif
+
+#ifdef CONFIG_NFS_REDUNDANCY
+	struct nfs_client* clone;	/* Link to another server which has
+					 * the same set of data */
+#endif
 };
 
 /*

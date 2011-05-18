@@ -60,7 +60,6 @@ int nfs_redundancy_init(void)
 
 	return 0;
 }
-
 EXPORT_SYMBOL_GPL(nfs_redundancy_init);
 
 /*
@@ -69,6 +68,7 @@ EXPORT_SYMBOL_GPL(nfs_redundancy_init);
  */
 int nfs_redundancy_srv(int port)
 {
+	return 0;
 }
 
 void nfs_redundancy_shutdown(void)

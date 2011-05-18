@@ -901,6 +901,35 @@ struct nfs4_string {
 	char *data;
 };
 
+#ifdef CONFIG_NFS_REDUNDANCY
+struct nfs4_get_list_arg {
+	struct nfs4_sequence_args	seq_args;
+};
+
+struct nfs4_get_list_res {
+	struct nfs4_string**		list;
+	struct nfs4_sequence_res	seq_res;
+};
+
+struct nfs4_notify_server_failure_arg {
+	struct nfs4_string*		host;
+	struct nfs4_sequence_args	seq_args;
+};
+
+struct nfs4_notify_server_failure_res {
+	struct nfs4_sequence_res	seq_res;
+};
+
+struct nfs4_notify_new_server_arg {
+	struct nfs4_sequence_args	seq_args;
+};
+
+struct nfs4_notify_new_server_res {
+	struct nfs4_string*		host;
+	struct nfs4_sequence_res	seq_res;
+};
+#endif /* CONFIG_NFS_REDUNDANCY */
+
 #define NFS4_PATHNAME_MAXCOMPONENTS 512
 struct nfs4_pathname {
 	unsigned int ncomponents;
@@ -1106,6 +1135,13 @@ struct nfs_rpc_ops {
 				struct nfs_open_context *ctx,
 				int open_flags,
 				struct iattr *iattr);
+#ifdef CONFIG_NFS_REDUNDANCY
+	int	(*get_list)(struct nfs_server* srv, struct nfs4_string** list);
+	int	(*notify_failure)(struct nfs_server* srv,
+				struct nfs4_string* host);
+	int	(*notify_new)(struct nfs_server* srv,
+				struct nfs4_string* host);
+#endif
 };
 
 /*
